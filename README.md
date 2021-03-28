@@ -101,5 +101,3 @@ are no char type, no char variables, no char constants.
 letters, digits (0-9), and the underscores .
 
 - Illegal characters should be reported character by character.
-
-- 
