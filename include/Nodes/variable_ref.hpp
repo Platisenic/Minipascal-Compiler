@@ -4,7 +4,6 @@
 class VariableRefNode : public ASTNodeBase
 {
     public:
-         
         std::string variable_name;
         NodeList* indices;
         bool isLeft = false;
@@ -17,7 +16,7 @@ class VariableRefNode : public ASTNodeBase
         );
         ~VariableRefNode()
         {
-            //NODELIST_PTR_DELETE(indices)
+            
         }
         const std::string getNameCString() const;
         void accept(AstNodeVisitor &p_visitor) override;

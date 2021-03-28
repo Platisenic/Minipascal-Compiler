@@ -3,8 +3,7 @@
 
 class ConstantNode : public ASTNodeBase
 {
-    public:
-        
+    public: 
         const_union value;  
         enumType type;
 
@@ -17,7 +16,7 @@ class ConstantNode : public ASTNodeBase
 
         ~ConstantNode()
         {
-            // do nothing
+            //   
         }
         const std::string getConstantValueCString() const;
         void accept(AstNodeVisitor &p_visitor) override;

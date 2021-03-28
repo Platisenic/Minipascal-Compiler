@@ -32,3 +32,4 @@ void AssignmentNode::visitVariableNodes(AstNodeVisitor &p_visitor)
 {
     variable_node->accept(p_visitor);
 }
+

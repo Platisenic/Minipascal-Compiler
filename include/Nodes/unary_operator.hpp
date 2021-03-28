@@ -3,8 +3,7 @@
 
 class UnaryOperatorNode: public ASTNodeBase
 {
-    public:
-        
+    private:
         enumOperator op;
         Node operand;
 
@@ -15,9 +14,11 @@ class UnaryOperatorNode: public ASTNodeBase
                            Node _operand);
         ~UnaryOperatorNode()
         {
-            //SAFE_DELETE(this->operand)
+            
         }
         const std::string getOpCString() const;
         void accept(AstNodeVisitor &p_visitor) override;
         void visitChildNodes(AstNodeVisitor &p_visitor) override;
+        enumOperator get_op(){return op;}
+        Node get_operand(){return operand;}
 };

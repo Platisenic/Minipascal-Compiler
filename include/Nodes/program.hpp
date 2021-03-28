@@ -4,7 +4,6 @@
 class ProgramNode : public ASTNodeBase
 {
     public:
-        
         std::string program_name;
         enumType type;
         vector<id_info *>* identifier_list;
@@ -25,10 +24,7 @@ class ProgramNode : public ASTNodeBase
         
         ~ProgramNode()
         {
-            //SAFE_DELETE(identifier_list)
-            //NODELIST_PTR_DELETE(declarations_node_list)
-            //NODELIST_PTR_DELETE(subprogram_declarations_node_list)
-            //SAFE_DELETE(compound_statement_node)
+            
         }
         const std::string getTypeCString() ;
         const std::string getNameCString() ;

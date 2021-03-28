@@ -73,7 +73,7 @@ void SemanticAnalyzer::visit(SubProgramNode &p_subprogram)
     std::vector<type_inf> parameter_type;
     for (auto p = p_subprogram.arguments_list->begin(); p != p_subprogram.arguments_list->end(); p++)
     {
-        for (auto pp = ((DeclarationNode *)(*p))->VariableNodes->rbegin(); pp != ((DeclarationNode *)(*p))->VariableNodes->rend(); pp++)
+        for (auto pp = ((DeclarationNode *)(*p))->get_VariableNodes()->rbegin(); pp != ((DeclarationNode *)(*p))->get_VariableNodes()->rend(); pp++)
         {
             parameter_type.push_back(((VariableNode *)(*pp))->type);
         }
@@ -170,7 +170,7 @@ void SemanticAnalyzer::visit(AssignmentNode &p_assignment)
     SymbolEntry *entr = nullptr;
     for (auto p = tablelist.rbegin(); p != tablelist.rend(); p++)
     {
-        entr = (*p).find(((VariableNode *)(p_assignment.variable_node))->variable_name);
+        entr = (*p).find(((VariableNode *)(p_assignment.get_variable_node()))->variable_name);
         if (entr != nullptr)
         {
             break;
@@ -180,23 +180,23 @@ void SemanticAnalyzer::visit(AssignmentNode &p_assignment)
     if(entr && entr->kind == KIND_FUNCTION && !entr->lock)
         entr->is_not_assign = false;
     if(entr && entr->kind == KIND_FUNCTION && entr->lock)
-         PrintErrors::print_ASSIG_TYPE(p_assignment.variable_node->getLocation().line, p_assignment.variable_node->getLocation().col);
+         PrintErrors::print_ASSIG_TYPE(p_assignment.get_variable_node()->getLocation().line, p_assignment.get_variable_node()->getLocation().col);
     //fprintf(stderr, "%s, %s\n", p_assignment.variable_node->TYPE.getTypeinf().c_str(), p_assignment.expression_node->TYPE.getTypeinf().c_str());
-    else if (!TypeEqual(p_assignment.variable_node->TYPE, p_assignment.expression_node->TYPE))
+    else if (!TypeEqual(p_assignment.get_variable_node()->TYPE, p_assignment.get_expression_node()->TYPE))
     {
-        PrintErrors::print_ASSIG_TYPE(p_assignment.variable_node->getLocation().line, p_assignment.variable_node->getLocation().col);
+        PrintErrors::print_ASSIG_TYPE(p_assignment.get_variable_node()->getLocation().line, p_assignment.get_variable_node()->getLocation().col);
     }
 }
 void SemanticAnalyzer::visit(BinaryOperatorNode &p_binaryoperator)
 {
     p_binaryoperator.visitChildNodes(*this);
-    if (!TypeEqual(p_binaryoperator.left_operand->TYPE, p_binaryoperator.right_operand->TYPE))
+    if (!TypeEqual(p_binaryoperator.get_left_operand()->TYPE, p_binaryoperator.get_right_operand()->TYPE))
     {
         PrintErrors::print_ARITH_TYPE(p_binaryoperator.getLocation().line, p_binaryoperator.getLocation().col, p_binaryoperator.getOpCString());
         p_binaryoperator.TYPE = type_inf(Type_Unknown);
     }
     else
-        p_binaryoperator.TYPE = p_binaryoperator.left_operand->TYPE;
+        p_binaryoperator.TYPE = p_binaryoperator.get_left_operand()->TYPE;
 }
 
 void SemanticAnalyzer::visit(CompoundStatementNode &p_compound_statement)

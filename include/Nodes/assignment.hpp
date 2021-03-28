@@ -3,7 +3,7 @@
 
 class AssignmentNode: public ASTNodeBase
 {
-    public:
+    private:
         Node variable_node;
         Node expression_node;
 
@@ -14,11 +14,12 @@ class AssignmentNode: public ASTNodeBase
                        Node _expression_node);
         ~AssignmentNode()
         {
-            //SAFE_DELETE(this->variable_node)
-            //SAFE_DELETE(this->expression_node)
+           
         }
         void accept(AstNodeVisitor &p_visitor) override;
         void visitChildNodes(AstNodeVisitor &p_visitor) override;
         void visitExpressionNodes(AstNodeVisitor &p_visitor);
         void visitVariableNodes(AstNodeVisitor &p_visitor);
+        Node get_variable_node() {return variable_node;}
+        Node get_expression_node() {return expression_node;}
 };

@@ -74,7 +74,6 @@ DIGIT [0-9]
 %x COMMENT
 
 %%
-                             /* v could do something */
 {P}{R}{O}{G}{R}{A}{M}       {LOG(KEYWORD); return(PROGRAM);    }
 {V}{A}{R}                   {LOG(KEYWORD); return(VAR);        }
 {A}{R}{R}{A}{Y}             {LOG(KEYWORD); return(ARRAY);      }

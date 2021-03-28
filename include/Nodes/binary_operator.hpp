@@ -3,8 +3,7 @@
 
 class BinaryOperatorNode: public ASTNodeBase
 {
-    public:
-        
+    private:
         enumOperator op;
         Node left_operand;
         Node right_operand;
@@ -17,10 +16,12 @@ class BinaryOperatorNode: public ASTNodeBase
                            Node _right_operand);
         ~BinaryOperatorNode()
         {
-            //SAFE_DELETE(this->left_operand);
-            //SAFE_DELETE(this->right_operand);
+            
         }
         const std::string getOpCString() const;
         void accept(AstNodeVisitor &p_visitor) override;
         void visitChildNodes(AstNodeVisitor &p_visitor) override;
+        enumOperator get_op()   {return op;}
+        Node get_left_operand() {return left_operand;}
+        Node get_right_operand(){return right_operand;}
 };

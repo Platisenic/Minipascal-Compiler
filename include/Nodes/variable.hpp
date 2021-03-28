@@ -17,7 +17,7 @@ class VariableNode : public ASTNodeBase
 
         ~VariableNode()
         {
-            // do nothing
+         
         }
 
         std::string getType();

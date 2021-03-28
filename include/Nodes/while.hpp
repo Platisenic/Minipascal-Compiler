@@ -3,8 +3,7 @@
 
 class WhileNode: public ASTNodeBase
 {
-    public:
-        
+    private:
         Node condition;
         Node body;
 
@@ -15,9 +14,10 @@ class WhileNode: public ASTNodeBase
                   Node _body);
         ~WhileNode()
         {
-            //SAFE_DELETE(this->condition)
-            //NODELIST_PTR_DELETE(this->body)
+            
         }
         void accept(AstNodeVisitor &p_visitor) override;
         void visitChildNodes(AstNodeVisitor &p_visitor) override;
+        Node get_condition(){return condition;}
+        Node get_body(){return body;} //Maybe nullptr
 };

@@ -17,7 +17,7 @@ void ConstantNode::accept(AstNodeVisitor &p_visitor) {
 }
 
 void ConstantNode::visitChildNodes(AstNodeVisitor &p_visitor){
-    //do nothing
+    //  
 }
 
 const std::string ConstantNode::getConstantValueCString() const {

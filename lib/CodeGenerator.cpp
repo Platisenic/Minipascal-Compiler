@@ -67,7 +67,7 @@ void CodeGenerator::visit(AssignmentNode &p_assignment)
     int level = 0;
     for (auto p = tablelist.rbegin(); p != tablelist.rend(); p++)
     {
-        entr = (*p).find(((VariableRefNode *)(p_assignment.variable_node))->variable_name);
+        entr = (*p).find(((VariableRefNode *)(p_assignment.get_variable_node()))->variable_name);
         if (entr != nullptr)
         {
             level = p->scope;
@@ -79,6 +79,7 @@ void CodeGenerator::visit(AssignmentNode &p_assignment)
      {
          case Type_int: stt = "i"; break;
          case Type_real : stt = "f" ; break;
+         default: printf("  ");
      }
     if (entr->type.dimensions.size() != 0)
     {
@@ -166,7 +167,7 @@ void CodeGenerator::visit(SubProgramNode &p_subprogram)
     std::vector<type_inf> parameter_type;
     for (auto p = p_subprogram.arguments_list->begin(); p != p_subprogram.arguments_list->end(); p++)
     {
-        for (auto pp = ((DeclarationNode *)(*p))->VariableNodes->rbegin(); pp != ((DeclarationNode *)(*p))->VariableNodes->rend(); pp++)
+        for (auto pp = ((DeclarationNode *)(*p))->get_VariableNodes()->rbegin(); pp != ((DeclarationNode *)(*p))->get_VariableNodes()->rend(); pp++)
         {
             parameter_type.push_back(((VariableNode *)(*pp))->type);
         }
@@ -188,6 +189,7 @@ void CodeGenerator::visit(SubProgramNode &p_subprogram)
         retTypeB = "F";
         retTypeS = "f";
         break;
+    default: printf("  ");
     }
 
     for (auto entr = tablelist.back().entries.begin(); entr != tablelist.back().entries.end(); entr++)
@@ -254,6 +256,7 @@ void CodeGenerator::visit(VariableRefNode &p_variable_ref)
     case Type_real:
         typp = "f";
         break;
+    default: printf("  ");
     }
 
     if (entr->isparam)
@@ -313,6 +316,7 @@ void CodeGenerator::visit(VariableRefNode &p_variable_ref)
     case Type_real:
         typ = "f";
         break;
+    default: printf("  ");
     }
     if (entr->type.dimensions.size() != 0)
     {
@@ -335,8 +339,8 @@ void CodeGenerator::visit(VariableRefNode &p_variable_ref)
 
         if (!p_variable_ref.isLeft)
         {   
-            if(p_variable_ref.indices->size() == 0)
-                fprintf(fp, "");
+            if(p_variable_ref.indices->size() == 0){}
+                
             else if(p_variable_ref.indices->size() < entr->type.dimensions.size())
                 fprintf(fp, "    aaload\n");
             else
@@ -357,10 +361,10 @@ void CodeGenerator::visit(BinaryOperatorNode &p_binaryoperator)
     Stringjava = 1;
     p_binaryoperator.visitChildNodes(*this);
     Stringjava = 0;
-    p_binaryoperator.TYPE = p_binaryoperator.left_operand->TYPE;
+    p_binaryoperator.TYPE = p_binaryoperator.get_left_operand()->TYPE;
     std::string typ;
 
-    switch (p_binaryoperator.left_operand->TYPE.s_type)
+    switch (p_binaryoperator.get_left_operand()->TYPE.s_type)
     {
     case Type_int:
         typ = "i";
@@ -381,9 +385,9 @@ void CodeGenerator::visit(BinaryOperatorNode &p_binaryoperator)
         typ = "???BOnode";
         break;
     }
-    if (p_binaryoperator.left_operand->TYPE.s_type != Type_string)
+    if (p_binaryoperator.get_left_operand()->TYPE.s_type != Type_string)
     {
-        switch (p_binaryoperator.op)
+        switch (p_binaryoperator.get_op())
         {
         case OP_ADD:
             fprintf(fp, "    %sadd\n", typ.c_str());
@@ -398,7 +402,7 @@ void CodeGenerator::visit(BinaryOperatorNode &p_binaryoperator)
             fprintf(fp, "    %sdiv\n", typ.c_str());
             break;
         case OP_GT:
-            if (p_binaryoperator.left_operand->TYPE.s_type == Type_real)
+            if (p_binaryoperator.get_left_operand()->TYPE.s_type == Type_real)
             {
                 fprintf(fp, "    fcmpg\n");
                 fprintf(fp, "    ldc 1\n");
@@ -410,7 +414,7 @@ void CodeGenerator::visit(BinaryOperatorNode &p_binaryoperator)
             }
             break;
         case OP_LT:
-            if (p_binaryoperator.left_operand->TYPE.s_type == Type_real)
+            if (p_binaryoperator.get_left_operand()->TYPE.s_type == Type_real)
             {
                 fprintf(fp, "    fcmpg\n");
                 fprintf(fp, "    ldc -1\n");
@@ -422,7 +426,7 @@ void CodeGenerator::visit(BinaryOperatorNode &p_binaryoperator)
             }
             break;
         case OP_EQ:
-            if (p_binaryoperator.left_operand->TYPE.s_type == Type_real)
+            if (p_binaryoperator.get_left_operand()->TYPE.s_type == Type_real)
             {
                 fprintf(fp, "    fcmpg\n");
                 fprintf(fp, "    ldc 0\n");
@@ -434,7 +438,7 @@ void CodeGenerator::visit(BinaryOperatorNode &p_binaryoperator)
             }
             break;
         case OP_LET:
-            if (p_binaryoperator.left_operand->TYPE.s_type == Type_real)
+            if (p_binaryoperator.get_left_operand()->TYPE.s_type == Type_real)
             {
                 fprintf(fp, "    fcmpg\n");
                 fprintf(fp, "    ldc 1\n");
@@ -446,7 +450,7 @@ void CodeGenerator::visit(BinaryOperatorNode &p_binaryoperator)
             }
             break;
         case OP_GET:
-            if (p_binaryoperator.left_operand->TYPE.s_type == Type_real)
+            if (p_binaryoperator.get_left_operand()->TYPE.s_type == Type_real)
             {
                 fprintf(fp, "    fcmpg\n");
                 fprintf(fp, "    ldc -1\n");
@@ -458,7 +462,7 @@ void CodeGenerator::visit(BinaryOperatorNode &p_binaryoperator)
             }
             break;
         case OP_NEQ:
-            if (p_binaryoperator.left_operand->TYPE.s_type == Type_real)
+            if (p_binaryoperator.get_left_operand()->TYPE.s_type == Type_real)
             {
                 fprintf(fp, "    fcmpg\n");
                 fprintf(fp, "    ldc 0\n");
@@ -469,15 +473,17 @@ void CodeGenerator::visit(BinaryOperatorNode &p_binaryoperator)
                 fprintf(fp, "    if_icmpne L%d\n", label++);
             }
             break;
+        default: printf("  ");
         }
+        
     }
 
-    if (p_binaryoperator.op == OP_GT ||
-        p_binaryoperator.op == OP_LT ||
-        p_binaryoperator.op == OP_EQ ||
-        p_binaryoperator.op == OP_LET ||
-        p_binaryoperator.op == OP_GET ||
-        p_binaryoperator.op == OP_NEQ)
+    if (p_binaryoperator.get_op() == OP_GT ||
+        p_binaryoperator.get_op() == OP_LT ||
+        p_binaryoperator.get_op() == OP_EQ ||
+        p_binaryoperator.get_op() == OP_LET ||
+        p_binaryoperator.get_op() == OP_GET ||
+        p_binaryoperator.get_op() == OP_NEQ)
     {
         fprintf(fp, "    ldc 0\n");
         fprintf(fp, "    goto L%d\n", label);
@@ -521,6 +527,7 @@ void CodeGenerator::visit(CompoundStatementNode &p_compound_statement)
                             fprintf(fp, "    ldc \"\"\n");
                             fprintf(fp, "    putstatic %s/%s Ljava/lang/String;\n", classname.c_str(), entr->name.c_str());
                             break;
+                        default: printf("  ");
                         }
                     }
                     else
@@ -529,7 +536,7 @@ void CodeGenerator::visit(CompoundStatementNode &p_compound_statement)
                         {
                             fprintf(fp, "    ldc %d\n", a.second - a.first + 1);
                         }
-                        fprintf(fp, "    multianewarray %s %d\n", entr->type.getTypeinfAssembly().c_str(), entr->type.dimensions.size());
+                        fprintf(fp, "    multianewarray %s %ld\n", entr->type.getTypeinfAssembly().c_str(), entr->type.dimensions.size());
                         fprintf(fp, "    putstatic %s/%s %s\n", classname.c_str(), entr->name.c_str(), entr->type.getTypeinfAssembly().c_str());
                     }
                 }
@@ -547,6 +554,7 @@ void CodeGenerator::visit(CompoundStatementNode &p_compound_statement)
                             fprintf(fp, "    ldc 0.0\n");
                             fprintf(fp, "    fstore_%d\n", entr->serialnum);
                             break;
+                        default: printf("  ");
                         }
                     }
                     else
@@ -555,7 +563,7 @@ void CodeGenerator::visit(CompoundStatementNode &p_compound_statement)
                         {
                             fprintf(fp, "    ldc %d\n", a.second - a.first + 1);
                         }
-                        fprintf(fp, "    multianewarray %s %d\n", entr->type.getTypeinfAssembly().c_str(), entr->type.dimensions.size());
+                        fprintf(fp, "    multianewarray %s %ld\n", entr->type.getTypeinfAssembly().c_str(), entr->type.dimensions.size());
                         fprintf(fp, "    astore_%d\n", entr->serialnum);
                     }
                 }
@@ -590,6 +598,7 @@ void CodeGenerator::visit(ConstantNode &p_constant)
         if (Stringjava == 1)
             fprintf(fp, "invokevirtual java/lang/StringBuffer/append(Ljava/lang/String;)Ljava/lang/StringBuffer;\n");
         break;
+    default: printf("  ");
     }
     p_constant.visitChildNodes(*this);
     p_constant.TYPE = type_inf(p_constant.type);
@@ -597,21 +606,21 @@ void CodeGenerator::visit(ConstantNode &p_constant)
 
 void CodeGenerator::visit(IfNode &p_if)
 {
-    p_if.condition->accept(*this);
+    p_if.get_condition()->accept(*this);
     // int  nowlabel = label;
-    // if (p_if.body_else)
+    // if (p_if.get_body_else())
     // {
         fprintf(fp, "    ifne L%d\n", label++);
         int nowlabel = label;
         label++;
-        if(p_if.body_else)p_if.body_else->accept(*this);
+        if(p_if.get_body_else())p_if.get_body_else()->accept(*this);
         fprintf(fp, "    goto L%d\n", nowlabel);
         fprintf(fp, "L%d:\n", nowlabel - 1);
     // }
 
-    // if (p_if.body_then)
+    // if (p_if.get_body_then())
     // {
-        if(p_if.body_then)p_if.body_then->accept(*this);
+        if(p_if.get_body_then())p_if.get_body_then()->accept(*this);
         fprintf(fp, "    goto L%d\n", nowlabel);
         fprintf(fp, "L%d:\n", nowlabel);
     // }
@@ -648,7 +657,7 @@ void CodeGenerator::visit(SubProgramInvocationNode &p_subprogram_invoc)
         }
         if (!entr)
         {
-            //do nothing
+            //  
         }
         else if (entr->kind == KIND_FUNCTION|| entr->kind == KIND_PROCEDURE) 
         {
@@ -667,6 +676,7 @@ void CodeGenerator::visit(SubProgramInvocationNode &p_subprogram_invoc)
             case Type_string:
                 fprintf(fp, "??? variablerefnode\n");
                 break;
+            default: printf("  ");
             }
         }
     }
@@ -675,7 +685,7 @@ void CodeGenerator::visit(SubProgramInvocationNode &p_subprogram_invoc)
 void CodeGenerator::visit(UnaryOperatorNode &p_unaryoperator)
 {
     p_unaryoperator.visitChildNodes(*this);
-    p_unaryoperator.TYPE = p_unaryoperator.operand->TYPE;
+    p_unaryoperator.TYPE = p_unaryoperator.get_operand()->TYPE;
     std::string typ;
     switch (p_unaryoperator.TYPE.s_type)
     {
@@ -689,7 +699,7 @@ void CodeGenerator::visit(UnaryOperatorNode &p_unaryoperator)
         typ = "???UnaryON";
         break;
     }
-    if (p_unaryoperator.op == OP_NOT)
+    if (p_unaryoperator.get_op() == OP_NOT)
     {
         fprintf(fp, "    ifne L%d\n", label++);
         fprintf(fp, "    ldc 1\n");
@@ -698,7 +708,7 @@ void CodeGenerator::visit(UnaryOperatorNode &p_unaryoperator)
         fprintf(fp, "    ldc 0\n");
         fprintf(fp, "L%d:\n", label++);
     }
-    else if (p_unaryoperator.op == OP_SUB)
+    else if (p_unaryoperator.get_op() == OP_SUB)
     {
         fprintf(fp, "    %sneg\n", typ.c_str());
     }
@@ -709,10 +719,10 @@ void CodeGenerator::visit(WhileNode &p_while)
     int toplabel = label;
     int secondlabel;
     fprintf(fp, "L%d:\n", label++);
-    p_while.condition->accept(*this);
+    p_while.get_condition()->accept(*this);
     secondlabel = label;
     fprintf(fp, "    ifeq L%d\n", label++);
-    p_while.body->accept(*this);
+    p_while.get_body()->accept(*this);
     fprintf(fp, "    goto L%d\n", toplabel);
     fprintf(fp, "L%d:\n", secondlabel);
 }

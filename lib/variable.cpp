@@ -37,7 +37,7 @@ void VariableNode::accept(AstNodeVisitor &p_visitor) {
 }
 
 void VariableNode::visitChildNodes(AstNodeVisitor &p_visitor) {
-    //do nothing
+    //  
 }
 
 const std::string VariableNode::getNameCString()  {

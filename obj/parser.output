@@ -1,0 +1,1596 @@
+Grammar
+
+    0 $accept: prog $end
+
+    1 prog: PROGRAM IDENTIFIER LPAREN identifier_list RPAREN SEMICOLON declarations subprogram_declarations compound_statement DOT
+
+    2 identifier_list: IDENTIFIER
+    3                | IDENTIFIER COMMA identifier_list
+
+    4 declarations: VAR identifier_list COLON type SEMICOLON declarations
+    5             | %empty
+
+    6 type: standard_type
+    7     | ARRAY LBRACE num DOTDOT num RBRACE OF type
+
+    8 standard_type: INTEGER
+    9              | REAL
+   10              | STRING
+
+   11 subprogram_declarations: subprogram_declaration SEMICOLON subprogram_declarations
+   12                        | %empty
+
+   13 subprogram_declaration: FUNCTION IDENTIFIER arguments COLON standard_type SEMICOLON declarations compound_statement
+   14                       | PROCEDURE IDENTIFIER arguments SEMICOLON declarations compound_statement
+
+   15 arguments: LPAREN parameter_list RPAREN
+   16          | %empty
+
+   17 parameter_list: optional_var identifier_list COLON type
+   18               | optional_var identifier_list COLON type SEMICOLON parameter_list
+
+   19 optional_var: VAR
+   20             | %empty
+
+   21 compound_statement: PBEGIN statement_list END
+
+   22 statement_list: statement
+   23               | statement SEMICOLON statement_list
+
+   24 statement: variable ASSIGNMENT expression
+   25          | procedure_statement
+   26          | compound_statement
+   27          | IF expression THEN statement ELSE statement
+   28          | WHILE expression DO statement
+   29          | %empty
+
+   30 variable: IDENTIFIER tail
+
+   31 tail: LBRACE expression RBRACE tail
+   32     | %empty
+
+   33 procedure_statement: IDENTIFIER
+   34                    | IDENTIFIER LPAREN expression_list RPAREN
+
+   35 expression_list: expression
+   36                | expression COMMA expression_list
+
+   37 expression: boolexpression
+   38           | boolexpression AND boolexpression
+   39           | boolexpression OR boolexpression
+
+   40 boolexpression: simple_expression
+   41               | simple_expression relop simple_expression
+
+   42 simple_expression: term
+   43                  | simple_expression addop term
+
+   44 term: factor
+   45     | term mulop factor
+
+   46 factor: variable
+   47       | IDENTIFIER LPAREN expression_list RPAREN
+   48       | num
+   49       | LITERALSTR
+   50       | LPAREN expression RPAREN
+   51       | NOT factor
+   52       | SUBOP factor
+
+   53 addop: ADDOP
+   54      | SUBOP
+
+   55 mulop: MULOP
+   56      | DIVOP
+
+   57 relop: LTOP
+   58      | GTOP
+   59      | EQOP
+   60      | LETOP
+   61      | GETOP
+   62      | NEQOP
+
+   63 num: INTEGERNUM
+   64    | REALNUMBER
+   65    | SCIENTIFIC
+
+
+Terminals, with rules where they appear
+
+    $end (0) 0
+    error (256)
+    IDENTIFIER <text> (258) 1 2 3 13 14 30 33 34 47
+    LITERALSTR <text> (259) 49
+    REALNUMBER <dval> (260) 64
+    SCIENTIFIC <dval> (261) 65
+    INTEGERNUM <val> (262) 63
+    PROGRAM (263) 1
+    VAR (264) 4 19
+    ARRAY (265) 7
+    OF (266) 7
+    INTEGER (267) 8
+    REAL (268) 9
+    STRING (269) 10
+    FUNCTION (270) 13
+    PROCEDURE (271) 14
+    PBEGIN (272) 21
+    END (273) 21
+    IF (274) 27
+    THEN (275) 27
+    ELSE (276) 27
+    WHILE (277) 28
+    DO (278) 28
+    NOT (279) 51
+    AND (280) 38
+    OR (281) 39
+    LPAREN (282) 1 15 34 47 50
+    RPAREN (283) 1 15 34 47 50
+    SEMICOLON (284) 1 4 11 13 14 18 23
+    DOT (285) 1
+    COMMA (286) 3 36
+    COLON (287) 4 13 17 18
+    LBRACE (288) 7 31
+    RBRACE (289) 7 31
+    DOTDOT (290) 7
+    ASSIGNMENT (291) 24
+    ADDOP (292) 53
+    SUBOP (293) 52 54
+    MULOP (294) 55
+    DIVOP (295) 56
+    LTOP (296) 57
+    GTOP (297) 58
+    EQOP (298) 59
+    GETOP (299) 61
+    LETOP (300) 60
+    NEQOP (301) 62
+
+
+Nonterminals, with rules where they appear
+
+    $accept (47)
+        on left: 0
+    prog <node> (48)
+        on left: 1
+        on right: 0
+    identifier_list <id_list_ptr> (49)
+        on left: 2 3
+        on right: 1 3 4 17 18
+    declarations <node_list> (50)
+        on left: 4 5
+        on right: 1 4 13 14
+    type <typeinfo> (51)
+        on left: 6 7
+        on right: 4 7 17 18
+    standard_type <val_Type> (52)
+        on left: 8 9 10
+        on right: 6 13
+    subprogram_declarations <node_list> (53)
+        on left: 11 12
+        on right: 1 11
+    subprogram_declaration <node> (54)
+        on left: 13 14
+        on right: 11
+    arguments <node_list> (55)
+        on left: 15 16
+        on right: 13 14
+    parameter_list <node_list> (56)
+        on left: 17 18
+        on right: 15 18
+    optional_var (57)
+        on left: 19 20
+        on right: 17 18
+    compound_statement <node> (58)
+        on left: 21
+        on right: 1 13 14 26
+    statement_list <node_list> (59)
+        on left: 22 23
+        on right: 21 23
+    statement <node> (60)
+        on left: 24 25 26 27 28 29
+        on right: 22 23 27 28
+    variable <node> (61)
+        on left: 30
+        on right: 24 46
+    tail <node_list> (62)
+        on left: 31 32
+        on right: 30 31
+    procedure_statement <node> (63)
+        on left: 33 34
+        on right: 25
+    expression_list <node_list> (64)
+        on left: 35 36
+        on right: 34 36 47
+    expression <node> (65)
+        on left: 37 38 39
+        on right: 24 27 28 31 35 36 50
+    boolexpression <node> (66)
+        on left: 40 41
+        on right: 37 38 39
+    simple_expression <node> (67)
+        on left: 42 43
+        on right: 40 41 43
+    term <node> (68)
+        on left: 44 45
+        on right: 42 43 45
+    factor <node> (69)
+        on left: 46 47 48 49 50 51 52
+        on right: 44 45 51 52
+    addop <op_type> (70)
+        on left: 53 54
+        on right: 43
+    mulop <op_type> (71)
+        on left: 55 56
+        on right: 45
+    relop <op_type> (72)
+        on left: 57 58 59 60 61 62
+        on right: 41
+    num <num_value> (73)
+        on left: 63 64 65
+        on right: 7 48
+
+
+State 0
+
+    0 $accept: . prog $end
+
+    PROGRAM  shift, and go to state 1
+
+    prog  go to state 2
+
+
+State 1
+
+    1 prog: PROGRAM . IDENTIFIER LPAREN identifier_list RPAREN SEMICOLON declarations subprogram_declarations compound_statement DOT
+
+    IDENTIFIER  shift, and go to state 3
+
+
+State 2
+
+    0 $accept: prog . $end
+
+    $end  shift, and go to state 4
+
+
+State 3
+
+    1 prog: PROGRAM IDENTIFIER . LPAREN identifier_list RPAREN SEMICOLON declarations subprogram_declarations compound_statement DOT
+
+    LPAREN  shift, and go to state 5
+
+
+State 4
+
+    0 $accept: prog $end .
+
+    $default  accept
+
+
+State 5
+
+    1 prog: PROGRAM IDENTIFIER LPAREN . identifier_list RPAREN SEMICOLON declarations subprogram_declarations compound_statement DOT
+
+    IDENTIFIER  shift, and go to state 6
+
+    identifier_list  go to state 7
+
+
+State 6
+
+    2 identifier_list: IDENTIFIER .
+    3                | IDENTIFIER . COMMA identifier_list
+
+    COMMA  shift, and go to state 8
+
+    $default  reduce using rule 2 (identifier_list)
+
+
+State 7
+
+    1 prog: PROGRAM IDENTIFIER LPAREN identifier_list . RPAREN SEMICOLON declarations subprogram_declarations compound_statement DOT
+
+    RPAREN  shift, and go to state 9
+
+
+State 8
+
+    3 identifier_list: IDENTIFIER COMMA . identifier_list
+
+    IDENTIFIER  shift, and go to state 6
+
+    identifier_list  go to state 10
+
+
+State 9
+
+    1 prog: PROGRAM IDENTIFIER LPAREN identifier_list RPAREN . SEMICOLON declarations subprogram_declarations compound_statement DOT
+
+    SEMICOLON  shift, and go to state 11
+
+
+State 10
+
+    3 identifier_list: IDENTIFIER COMMA identifier_list .
+
+    $default  reduce using rule 3 (identifier_list)
+
+
+State 11
+
+    1 prog: PROGRAM IDENTIFIER LPAREN identifier_list RPAREN SEMICOLON . declarations subprogram_declarations compound_statement DOT
+
+    VAR  shift, and go to state 12
+
+    $default  reduce using rule 5 (declarations)
+
+    declarations  go to state 13
+
+
+State 12
+
+    4 declarations: VAR . identifier_list COLON type SEMICOLON declarations
+
+    IDENTIFIER  shift, and go to state 6
+
+    identifier_list  go to state 14
+
+
+State 13
+
+    1 prog: PROGRAM IDENTIFIER LPAREN identifier_list RPAREN SEMICOLON declarations . subprogram_declarations compound_statement DOT
+
+    FUNCTION   shift, and go to state 15
+    PROCEDURE  shift, and go to state 16
+
+    $default  reduce using rule 12 (subprogram_declarations)
+
+    subprogram_declarations  go to state 17
+    subprogram_declaration   go to state 18
+
+
+State 14
+
+    4 declarations: VAR identifier_list . COLON type SEMICOLON declarations
+
+    COLON  shift, and go to state 19
+
+
+State 15
+
+   13 subprogram_declaration: FUNCTION . IDENTIFIER arguments COLON standard_type SEMICOLON declarations compound_statement
+
+    IDENTIFIER  shift, and go to state 20
+
+
+State 16
+
+   14 subprogram_declaration: PROCEDURE . IDENTIFIER arguments SEMICOLON declarations compound_statement
+
+    IDENTIFIER  shift, and go to state 21
+
+
+State 17
+
+    1 prog: PROGRAM IDENTIFIER LPAREN identifier_list RPAREN SEMICOLON declarations subprogram_declarations . compound_statement DOT
+
+    PBEGIN  shift, and go to state 22
+
+    compound_statement  go to state 23
+
+
+State 18
+
+   11 subprogram_declarations: subprogram_declaration . SEMICOLON subprogram_declarations
+
+    SEMICOLON  shift, and go to state 24
+
+
+State 19
+
+    4 declarations: VAR identifier_list COLON . type SEMICOLON declarations
+
+    ARRAY    shift, and go to state 25
+    INTEGER  shift, and go to state 26
+    REAL     shift, and go to state 27
+    STRING   shift, and go to state 28
+
+    type           go to state 29
+    standard_type  go to state 30
+
+
+State 20
+
+   13 subprogram_declaration: FUNCTION IDENTIFIER . arguments COLON standard_type SEMICOLON declarations compound_statement
+
+    LPAREN  shift, and go to state 31
+
+    $default  reduce using rule 16 (arguments)
+
+    arguments  go to state 32
+
+
+State 21
+
+   14 subprogram_declaration: PROCEDURE IDENTIFIER . arguments SEMICOLON declarations compound_statement
+
+    LPAREN  shift, and go to state 31
+
+    $default  reduce using rule 16 (arguments)
+
+    arguments  go to state 33
+
+
+State 22
+
+   21 compound_statement: PBEGIN . statement_list END
+
+    IDENTIFIER  shift, and go to state 34
+    PBEGIN      shift, and go to state 22
+    IF          shift, and go to state 35
+    WHILE       shift, and go to state 36
+
+    $default  reduce using rule 29 (statement)
+
+    compound_statement   go to state 37
+    statement_list       go to state 38
+    statement            go to state 39
+    variable             go to state 40
+    procedure_statement  go to state 41
+
+
+State 23
+
+    1 prog: PROGRAM IDENTIFIER LPAREN identifier_list RPAREN SEMICOLON declarations subprogram_declarations compound_statement . DOT
+
+    DOT  shift, and go to state 42
+
+
+State 24
+
+   11 subprogram_declarations: subprogram_declaration SEMICOLON . subprogram_declarations
+
+    FUNCTION   shift, and go to state 15
+    PROCEDURE  shift, and go to state 16
+
+    $default  reduce using rule 12 (subprogram_declarations)
+
+    subprogram_declarations  go to state 43
+    subprogram_declaration   go to state 18
+
+
+State 25
+
+    7 type: ARRAY . LBRACE num DOTDOT num RBRACE OF type
+
+    LBRACE  shift, and go to state 44
+
+
+State 26
+
+    8 standard_type: INTEGER .
+
+    $default  reduce using rule 8 (standard_type)
+
+
+State 27
+
+    9 standard_type: REAL .
+
+    $default  reduce using rule 9 (standard_type)
+
+
+State 28
+
+   10 standard_type: STRING .
+
+    $default  reduce using rule 10 (standard_type)
+
+
+State 29
+
+    4 declarations: VAR identifier_list COLON type . SEMICOLON declarations
+
+    SEMICOLON  shift, and go to state 45
+
+
+State 30
+
+    6 type: standard_type .
+
+    $default  reduce using rule 6 (type)
+
+
+State 31
+
+   15 arguments: LPAREN . parameter_list RPAREN
+
+    VAR  shift, and go to state 46
+
+    $default  reduce using rule 20 (optional_var)
+
+    parameter_list  go to state 47
+    optional_var    go to state 48
+
+
+State 32
+
+   13 subprogram_declaration: FUNCTION IDENTIFIER arguments . COLON standard_type SEMICOLON declarations compound_statement
+
+    COLON  shift, and go to state 49
+
+
+State 33
+
+   14 subprogram_declaration: PROCEDURE IDENTIFIER arguments . SEMICOLON declarations compound_statement
+
+    SEMICOLON  shift, and go to state 50
+
+
+State 34
+
+   30 variable: IDENTIFIER . tail
+   33 procedure_statement: IDENTIFIER .
+   34                    | IDENTIFIER . LPAREN expression_list RPAREN
+
+    LPAREN  shift, and go to state 51
+    LBRACE  shift, and go to state 52
+
+    ASSIGNMENT  reduce using rule 32 (tail)
+    $default    reduce using rule 33 (procedure_statement)
+
+    tail  go to state 53
+
+
+State 35
+
+   27 statement: IF . expression THEN statement ELSE statement
+
+    IDENTIFIER  shift, and go to state 54
+    LITERALSTR  shift, and go to state 55
+    REALNUMBER  shift, and go to state 56
+    SCIENTIFIC  shift, and go to state 57
+    INTEGERNUM  shift, and go to state 58
+    NOT         shift, and go to state 59
+    LPAREN      shift, and go to state 60
+    SUBOP       shift, and go to state 61
+
+    variable           go to state 62
+    expression         go to state 63
+    boolexpression     go to state 64
+    simple_expression  go to state 65
+    term               go to state 66
+    factor             go to state 67
+    num                go to state 68
+
+
+State 36
+
+   28 statement: WHILE . expression DO statement
+
+    IDENTIFIER  shift, and go to state 54
+    LITERALSTR  shift, and go to state 55
+    REALNUMBER  shift, and go to state 56
+    SCIENTIFIC  shift, and go to state 57
+    INTEGERNUM  shift, and go to state 58
+    NOT         shift, and go to state 59
+    LPAREN      shift, and go to state 60
+    SUBOP       shift, and go to state 61
+
+    variable           go to state 62
+    expression         go to state 69
+    boolexpression     go to state 64
+    simple_expression  go to state 65
+    term               go to state 66
+    factor             go to state 67
+    num                go to state 68
+
+
+State 37
+
+   26 statement: compound_statement .
+
+    $default  reduce using rule 26 (statement)
+
+
+State 38
+
+   21 compound_statement: PBEGIN statement_list . END
+
+    END  shift, and go to state 70
+
+
+State 39
+
+   22 statement_list: statement .
+   23               | statement . SEMICOLON statement_list
+
+    SEMICOLON  shift, and go to state 71
+
+    $default  reduce using rule 22 (statement_list)
+
+
+State 40
+
+   24 statement: variable . ASSIGNMENT expression
+
+    ASSIGNMENT  shift, and go to state 72
+
+
+State 41
+
+   25 statement: procedure_statement .
+
+    $default  reduce using rule 25 (statement)
+
+
+State 42
+
+    1 prog: PROGRAM IDENTIFIER LPAREN identifier_list RPAREN SEMICOLON declarations subprogram_declarations compound_statement DOT .
+
+    $default  reduce using rule 1 (prog)
+
+
+State 43
+
+   11 subprogram_declarations: subprogram_declaration SEMICOLON subprogram_declarations .
+
+    $default  reduce using rule 11 (subprogram_declarations)
+
+
+State 44
+
+    7 type: ARRAY LBRACE . num DOTDOT num RBRACE OF type
+
+    REALNUMBER  shift, and go to state 56
+    SCIENTIFIC  shift, and go to state 57
+    INTEGERNUM  shift, and go to state 58
+
+    num  go to state 73
+
+
+State 45
+
+    4 declarations: VAR identifier_list COLON type SEMICOLON . declarations
+
+    VAR  shift, and go to state 12
+
+    $default  reduce using rule 5 (declarations)
+
+    declarations  go to state 74
+
+
+State 46
+
+   19 optional_var: VAR .
+
+    $default  reduce using rule 19 (optional_var)
+
+
+State 47
+
+   15 arguments: LPAREN parameter_list . RPAREN
+
+    RPAREN  shift, and go to state 75
+
+
+State 48
+
+   17 parameter_list: optional_var . identifier_list COLON type
+   18               | optional_var . identifier_list COLON type SEMICOLON parameter_list
+
+    IDENTIFIER  shift, and go to state 6
+
+    identifier_list  go to state 76
+
+
+State 49
+
+   13 subprogram_declaration: FUNCTION IDENTIFIER arguments COLON . standard_type SEMICOLON declarations compound_statement
+
+    INTEGER  shift, and go to state 26
+    REAL     shift, and go to state 27
+    STRING   shift, and go to state 28
+
+    standard_type  go to state 77
+
+
+State 50
+
+   14 subprogram_declaration: PROCEDURE IDENTIFIER arguments SEMICOLON . declarations compound_statement
+
+    VAR  shift, and go to state 12
+
+    $default  reduce using rule 5 (declarations)
+
+    declarations  go to state 78
+
+
+State 51
+
+   34 procedure_statement: IDENTIFIER LPAREN . expression_list RPAREN
+
+    IDENTIFIER  shift, and go to state 54
+    LITERALSTR  shift, and go to state 55
+    REALNUMBER  shift, and go to state 56
+    SCIENTIFIC  shift, and go to state 57
+    INTEGERNUM  shift, and go to state 58
+    NOT         shift, and go to state 59
+    LPAREN      shift, and go to state 60
+    SUBOP       shift, and go to state 61
+
+    variable           go to state 62
+    expression_list    go to state 79
+    expression         go to state 80
+    boolexpression     go to state 64
+    simple_expression  go to state 65
+    term               go to state 66
+    factor             go to state 67
+    num                go to state 68
+
+
+State 52
+
+   31 tail: LBRACE . expression RBRACE tail
+
+    IDENTIFIER  shift, and go to state 54
+    LITERALSTR  shift, and go to state 55
+    REALNUMBER  shift, and go to state 56
+    SCIENTIFIC  shift, and go to state 57
+    INTEGERNUM  shift, and go to state 58
+    NOT         shift, and go to state 59
+    LPAREN      shift, and go to state 60
+    SUBOP       shift, and go to state 61
+
+    variable           go to state 62
+    expression         go to state 81
+    boolexpression     go to state 64
+    simple_expression  go to state 65
+    term               go to state 66
+    factor             go to state 67
+    num                go to state 68
+
+
+State 53
+
+   30 variable: IDENTIFIER tail .
+
+    $default  reduce using rule 30 (variable)
+
+
+State 54
+
+   30 variable: IDENTIFIER . tail
+   47 factor: IDENTIFIER . LPAREN expression_list RPAREN
+
+    LPAREN  shift, and go to state 82
+    LBRACE  shift, and go to state 52
+
+    $default  reduce using rule 32 (tail)
+
+    tail  go to state 53
+
+
+State 55
+
+   49 factor: LITERALSTR .
+
+    $default  reduce using rule 49 (factor)
+
+
+State 56
+
+   64 num: REALNUMBER .
+
+    $default  reduce using rule 64 (num)
+
+
+State 57
+
+   65 num: SCIENTIFIC .
+
+    $default  reduce using rule 65 (num)
+
+
+State 58
+
+   63 num: INTEGERNUM .
+
+    $default  reduce using rule 63 (num)
+
+
+State 59
+
+   51 factor: NOT . factor
+
+    IDENTIFIER  shift, and go to state 54
+    LITERALSTR  shift, and go to state 55
+    REALNUMBER  shift, and go to state 56
+    SCIENTIFIC  shift, and go to state 57
+    INTEGERNUM  shift, and go to state 58
+    NOT         shift, and go to state 59
+    LPAREN      shift, and go to state 60
+    SUBOP       shift, and go to state 61
+
+    variable  go to state 62
+    factor    go to state 83
+    num       go to state 68
+
+
+State 60
+
+   50 factor: LPAREN . expression RPAREN
+
+    IDENTIFIER  shift, and go to state 54
+    LITERALSTR  shift, and go to state 55
+    REALNUMBER  shift, and go to state 56
+    SCIENTIFIC  shift, and go to state 57
+    INTEGERNUM  shift, and go to state 58
+    NOT         shift, and go to state 59
+    LPAREN      shift, and go to state 60
+    SUBOP       shift, and go to state 61
+
+    variable           go to state 62
+    expression         go to state 84
+    boolexpression     go to state 64
+    simple_expression  go to state 65
+    term               go to state 66
+    factor             go to state 67
+    num                go to state 68
+
+
+State 61
+
+   52 factor: SUBOP . factor
+
+    IDENTIFIER  shift, and go to state 54
+    LITERALSTR  shift, and go to state 55
+    REALNUMBER  shift, and go to state 56
+    SCIENTIFIC  shift, and go to state 57
+    INTEGERNUM  shift, and go to state 58
+    NOT         shift, and go to state 59
+    LPAREN      shift, and go to state 60
+    SUBOP       shift, and go to state 61
+
+    variable  go to state 62
+    factor    go to state 85
+    num       go to state 68
+
+
+State 62
+
+   46 factor: variable .
+
+    $default  reduce using rule 46 (factor)
+
+
+State 63
+
+   27 statement: IF expression . THEN statement ELSE statement
+
+    THEN  shift, and go to state 86
+
+
+State 64
+
+   37 expression: boolexpression .
+   38           | boolexpression . AND boolexpression
+   39           | boolexpression . OR boolexpression
+
+    AND  shift, and go to state 87
+    OR   shift, and go to state 88
+
+    $default  reduce using rule 37 (expression)
+
+
+State 65
+
+   40 boolexpression: simple_expression .
+   41               | simple_expression . relop simple_expression
+   43 simple_expression: simple_expression . addop term
+
+    ADDOP  shift, and go to state 89
+    SUBOP  shift, and go to state 90
+    LTOP   shift, and go to state 91
+    GTOP   shift, and go to state 92
+    EQOP   shift, and go to state 93
+    GETOP  shift, and go to state 94
+    LETOP  shift, and go to state 95
+    NEQOP  shift, and go to state 96
+
+    $default  reduce using rule 40 (boolexpression)
+
+    addop  go to state 97
+    relop  go to state 98
+
+
+State 66
+
+   42 simple_expression: term .
+   45 term: term . mulop factor
+
+    MULOP  shift, and go to state 99
+    DIVOP  shift, and go to state 100
+
+    $default  reduce using rule 42 (simple_expression)
+
+    mulop  go to state 101
+
+
+State 67
+
+   44 term: factor .
+
+    $default  reduce using rule 44 (term)
+
+
+State 68
+
+   48 factor: num .
+
+    $default  reduce using rule 48 (factor)
+
+
+State 69
+
+   28 statement: WHILE expression . DO statement
+
+    DO  shift, and go to state 102
+
+
+State 70
+
+   21 compound_statement: PBEGIN statement_list END .
+
+    $default  reduce using rule 21 (compound_statement)
+
+
+State 71
+
+   23 statement_list: statement SEMICOLON . statement_list
+
+    IDENTIFIER  shift, and go to state 34
+    PBEGIN      shift, and go to state 22
+    IF          shift, and go to state 35
+    WHILE       shift, and go to state 36
+
+    $default  reduce using rule 29 (statement)
+
+    compound_statement   go to state 37
+    statement_list       go to state 103
+    statement            go to state 39
+    variable             go to state 40
+    procedure_statement  go to state 41
+
+
+State 72
+
+   24 statement: variable ASSIGNMENT . expression
+
+    IDENTIFIER  shift, and go to state 54
+    LITERALSTR  shift, and go to state 55
+    REALNUMBER  shift, and go to state 56
+    SCIENTIFIC  shift, and go to state 57
+    INTEGERNUM  shift, and go to state 58
+    NOT         shift, and go to state 59
+    LPAREN      shift, and go to state 60
+    SUBOP       shift, and go to state 61
+
+    variable           go to state 62
+    expression         go to state 104
+    boolexpression     go to state 64
+    simple_expression  go to state 65
+    term               go to state 66
+    factor             go to state 67
+    num                go to state 68
+
+
+State 73
+
+    7 type: ARRAY LBRACE num . DOTDOT num RBRACE OF type
+
+    DOTDOT  shift, and go to state 105
+
+
+State 74
+
+    4 declarations: VAR identifier_list COLON type SEMICOLON declarations .
+
+    $default  reduce using rule 4 (declarations)
+
+
+State 75
+
+   15 arguments: LPAREN parameter_list RPAREN .
+
+    $default  reduce using rule 15 (arguments)
+
+
+State 76
+
+   17 parameter_list: optional_var identifier_list . COLON type
+   18               | optional_var identifier_list . COLON type SEMICOLON parameter_list
+
+    COLON  shift, and go to state 106
+
+
+State 77
+
+   13 subprogram_declaration: FUNCTION IDENTIFIER arguments COLON standard_type . SEMICOLON declarations compound_statement
+
+    SEMICOLON  shift, and go to state 107
+
+
+State 78
+
+   14 subprogram_declaration: PROCEDURE IDENTIFIER arguments SEMICOLON declarations . compound_statement
+
+    PBEGIN  shift, and go to state 22
+
+    compound_statement  go to state 108
+
+
+State 79
+
+   34 procedure_statement: IDENTIFIER LPAREN expression_list . RPAREN
+
+    RPAREN  shift, and go to state 109
+
+
+State 80
+
+   35 expression_list: expression .
+   36                | expression . COMMA expression_list
+
+    COMMA  shift, and go to state 110
+
+    $default  reduce using rule 35 (expression_list)
+
+
+State 81
+
+   31 tail: LBRACE expression . RBRACE tail
+
+    RBRACE  shift, and go to state 111
+
+
+State 82
+
+   47 factor: IDENTIFIER LPAREN . expression_list RPAREN
+
+    IDENTIFIER  shift, and go to state 54
+    LITERALSTR  shift, and go to state 55
+    REALNUMBER  shift, and go to state 56
+    SCIENTIFIC  shift, and go to state 57
+    INTEGERNUM  shift, and go to state 58
+    NOT         shift, and go to state 59
+    LPAREN      shift, and go to state 60
+    SUBOP       shift, and go to state 61
+
+    variable           go to state 62
+    expression_list    go to state 112
+    expression         go to state 80
+    boolexpression     go to state 64
+    simple_expression  go to state 65
+    term               go to state 66
+    factor             go to state 67
+    num                go to state 68
+
+
+State 83
+
+   51 factor: NOT factor .
+
+    $default  reduce using rule 51 (factor)
+
+
+State 84
+
+   50 factor: LPAREN expression . RPAREN
+
+    RPAREN  shift, and go to state 113
+
+
+State 85
+
+   52 factor: SUBOP factor .
+
+    $default  reduce using rule 52 (factor)
+
+
+State 86
+
+   27 statement: IF expression THEN . statement ELSE statement
+
+    IDENTIFIER  shift, and go to state 34
+    PBEGIN      shift, and go to state 22
+    IF          shift, and go to state 35
+    WHILE       shift, and go to state 36
+
+    $default  reduce using rule 29 (statement)
+
+    compound_statement   go to state 37
+    statement            go to state 114
+    variable             go to state 40
+    procedure_statement  go to state 41
+
+
+State 87
+
+   38 expression: boolexpression AND . boolexpression
+
+    IDENTIFIER  shift, and go to state 54
+    LITERALSTR  shift, and go to state 55
+    REALNUMBER  shift, and go to state 56
+    SCIENTIFIC  shift, and go to state 57
+    INTEGERNUM  shift, and go to state 58
+    NOT         shift, and go to state 59
+    LPAREN      shift, and go to state 60
+    SUBOP       shift, and go to state 61
+
+    variable           go to state 62
+    boolexpression     go to state 115
+    simple_expression  go to state 65
+    term               go to state 66
+    factor             go to state 67
+    num                go to state 68
+
+
+State 88
+
+   39 expression: boolexpression OR . boolexpression
+
+    IDENTIFIER  shift, and go to state 54
+    LITERALSTR  shift, and go to state 55
+    REALNUMBER  shift, and go to state 56
+    SCIENTIFIC  shift, and go to state 57
+    INTEGERNUM  shift, and go to state 58
+    NOT         shift, and go to state 59
+    LPAREN      shift, and go to state 60
+    SUBOP       shift, and go to state 61
+
+    variable           go to state 62
+    boolexpression     go to state 116
+    simple_expression  go to state 65
+    term               go to state 66
+    factor             go to state 67
+    num                go to state 68
+
+
+State 89
+
+   53 addop: ADDOP .
+
+    $default  reduce using rule 53 (addop)
+
+
+State 90
+
+   54 addop: SUBOP .
+
+    $default  reduce using rule 54 (addop)
+
+
+State 91
+
+   57 relop: LTOP .
+
+    $default  reduce using rule 57 (relop)
+
+
+State 92
+
+   58 relop: GTOP .
+
+    $default  reduce using rule 58 (relop)
+
+
+State 93
+
+   59 relop: EQOP .
+
+    $default  reduce using rule 59 (relop)
+
+
+State 94
+
+   61 relop: GETOP .
+
+    $default  reduce using rule 61 (relop)
+
+
+State 95
+
+   60 relop: LETOP .
+
+    $default  reduce using rule 60 (relop)
+
+
+State 96
+
+   62 relop: NEQOP .
+
+    $default  reduce using rule 62 (relop)
+
+
+State 97
+
+   43 simple_expression: simple_expression addop . term
+
+    IDENTIFIER  shift, and go to state 54
+    LITERALSTR  shift, and go to state 55
+    REALNUMBER  shift, and go to state 56
+    SCIENTIFIC  shift, and go to state 57
+    INTEGERNUM  shift, and go to state 58
+    NOT         shift, and go to state 59
+    LPAREN      shift, and go to state 60
+    SUBOP       shift, and go to state 61
+
+    variable  go to state 62
+    term      go to state 117
+    factor    go to state 67
+    num       go to state 68
+
+
+State 98
+
+   41 boolexpression: simple_expression relop . simple_expression
+
+    IDENTIFIER  shift, and go to state 54
+    LITERALSTR  shift, and go to state 55
+    REALNUMBER  shift, and go to state 56
+    SCIENTIFIC  shift, and go to state 57
+    INTEGERNUM  shift, and go to state 58
+    NOT         shift, and go to state 59
+    LPAREN      shift, and go to state 60
+    SUBOP       shift, and go to state 61
+
+    variable           go to state 62
+    simple_expression  go to state 118
+    term               go to state 66
+    factor             go to state 67
+    num                go to state 68
+
+
+State 99
+
+   55 mulop: MULOP .
+
+    $default  reduce using rule 55 (mulop)
+
+
+State 100
+
+   56 mulop: DIVOP .
+
+    $default  reduce using rule 56 (mulop)
+
+
+State 101
+
+   45 term: term mulop . factor
+
+    IDENTIFIER  shift, and go to state 54
+    LITERALSTR  shift, and go to state 55
+    REALNUMBER  shift, and go to state 56
+    SCIENTIFIC  shift, and go to state 57
+    INTEGERNUM  shift, and go to state 58
+    NOT         shift, and go to state 59
+    LPAREN      shift, and go to state 60
+    SUBOP       shift, and go to state 61
+
+    variable  go to state 62
+    factor    go to state 119
+    num       go to state 68
+
+
+State 102
+
+   28 statement: WHILE expression DO . statement
+
+    IDENTIFIER  shift, and go to state 34
+    PBEGIN      shift, and go to state 22
+    IF          shift, and go to state 35
+    WHILE       shift, and go to state 36
+
+    $default  reduce using rule 29 (statement)
+
+    compound_statement   go to state 37
+    statement            go to state 120
+    variable             go to state 40
+    procedure_statement  go to state 41
+
+
+State 103
+
+   23 statement_list: statement SEMICOLON statement_list .
+
+    $default  reduce using rule 23 (statement_list)
+
+
+State 104
+
+   24 statement: variable ASSIGNMENT expression .
+
+    $default  reduce using rule 24 (statement)
+
+
+State 105
+
+    7 type: ARRAY LBRACE num DOTDOT . num RBRACE OF type
+
+    REALNUMBER  shift, and go to state 56
+    SCIENTIFIC  shift, and go to state 57
+    INTEGERNUM  shift, and go to state 58
+
+    num  go to state 121
+
+
+State 106
+
+   17 parameter_list: optional_var identifier_list COLON . type
+   18               | optional_var identifier_list COLON . type SEMICOLON parameter_list
+
+    ARRAY    shift, and go to state 25
+    INTEGER  shift, and go to state 26
+    REAL     shift, and go to state 27
+    STRING   shift, and go to state 28
+
+    type           go to state 122
+    standard_type  go to state 30
+
+
+State 107
+
+   13 subprogram_declaration: FUNCTION IDENTIFIER arguments COLON standard_type SEMICOLON . declarations compound_statement
+
+    VAR  shift, and go to state 12
+
+    $default  reduce using rule 5 (declarations)
+
+    declarations  go to state 123
+
+
+State 108
+
+   14 subprogram_declaration: PROCEDURE IDENTIFIER arguments SEMICOLON declarations compound_statement .
+
+    $default  reduce using rule 14 (subprogram_declaration)
+
+
+State 109
+
+   34 procedure_statement: IDENTIFIER LPAREN expression_list RPAREN .
+
+    $default  reduce using rule 34 (procedure_statement)
+
+
+State 110
+
+   36 expression_list: expression COMMA . expression_list
+
+    IDENTIFIER  shift, and go to state 54
+    LITERALSTR  shift, and go to state 55
+    REALNUMBER  shift, and go to state 56
+    SCIENTIFIC  shift, and go to state 57
+    INTEGERNUM  shift, and go to state 58
+    NOT         shift, and go to state 59
+    LPAREN      shift, and go to state 60
+    SUBOP       shift, and go to state 61
+
+    variable           go to state 62
+    expression_list    go to state 124
+    expression         go to state 80
+    boolexpression     go to state 64
+    simple_expression  go to state 65
+    term               go to state 66
+    factor             go to state 67
+    num                go to state 68
+
+
+State 111
+
+   31 tail: LBRACE expression RBRACE . tail
+
+    LBRACE  shift, and go to state 52
+
+    $default  reduce using rule 32 (tail)
+
+    tail  go to state 125
+
+
+State 112
+
+   47 factor: IDENTIFIER LPAREN expression_list . RPAREN
+
+    RPAREN  shift, and go to state 126
+
+
+State 113
+
+   50 factor: LPAREN expression RPAREN .
+
+    $default  reduce using rule 50 (factor)
+
+
+State 114
+
+   27 statement: IF expression THEN statement . ELSE statement
+
+    ELSE  shift, and go to state 127
+
+
+State 115
+
+   38 expression: boolexpression AND boolexpression .
+
+    $default  reduce using rule 38 (expression)
+
+
+State 116
+
+   39 expression: boolexpression OR boolexpression .
+
+    $default  reduce using rule 39 (expression)
+
+
+State 117
+
+   43 simple_expression: simple_expression addop term .
+   45 term: term . mulop factor
+
+    MULOP  shift, and go to state 99
+    DIVOP  shift, and go to state 100
+
+    $default  reduce using rule 43 (simple_expression)
+
+    mulop  go to state 101
+
+
+State 118
+
+   41 boolexpression: simple_expression relop simple_expression .
+   43 simple_expression: simple_expression . addop term
+
+    ADDOP  shift, and go to state 89
+    SUBOP  shift, and go to state 90
+
+    $default  reduce using rule 41 (boolexpression)
+
+    addop  go to state 97
+
+
+State 119
+
+   45 term: term mulop factor .
+
+    $default  reduce using rule 45 (term)
+
+
+State 120
+
+   28 statement: WHILE expression DO statement .
+
+    $default  reduce using rule 28 (statement)
+
+
+State 121
+
+    7 type: ARRAY LBRACE num DOTDOT num . RBRACE OF type
+
+    RBRACE  shift, and go to state 128
+
+
+State 122
+
+   17 parameter_list: optional_var identifier_list COLON type .
+   18               | optional_var identifier_list COLON type . SEMICOLON parameter_list
+
+    SEMICOLON  shift, and go to state 129
+
+    $default  reduce using rule 17 (parameter_list)
+
+
+State 123
+
+   13 subprogram_declaration: FUNCTION IDENTIFIER arguments COLON standard_type SEMICOLON declarations . compound_statement
+
+    PBEGIN  shift, and go to state 22
+
+    compound_statement  go to state 130
+
+
+State 124
+
+   36 expression_list: expression COMMA expression_list .
+
+    $default  reduce using rule 36 (expression_list)
+
+
+State 125
+
+   31 tail: LBRACE expression RBRACE tail .
+
+    $default  reduce using rule 31 (tail)
+
+
+State 126
+
+   47 factor: IDENTIFIER LPAREN expression_list RPAREN .
+
+    $default  reduce using rule 47 (factor)
+
+
+State 127
+
+   27 statement: IF expression THEN statement ELSE . statement
+
+    IDENTIFIER  shift, and go to state 34
+    PBEGIN      shift, and go to state 22
+    IF          shift, and go to state 35
+    WHILE       shift, and go to state 36
+
+    $default  reduce using rule 29 (statement)
+
+    compound_statement   go to state 37
+    statement            go to state 131
+    variable             go to state 40
+    procedure_statement  go to state 41
+
+
+State 128
+
+    7 type: ARRAY LBRACE num DOTDOT num RBRACE . OF type
+
+    OF  shift, and go to state 132
+
+
+State 129
+
+   18 parameter_list: optional_var identifier_list COLON type SEMICOLON . parameter_list
+
+    VAR  shift, and go to state 46
+
+    $default  reduce using rule 20 (optional_var)
+
+    parameter_list  go to state 133
+    optional_var    go to state 48
+
+
+State 130
+
+   13 subprogram_declaration: FUNCTION IDENTIFIER arguments COLON standard_type SEMICOLON declarations compound_statement .
+
+    $default  reduce using rule 13 (subprogram_declaration)
+
+
+State 131
+
+   27 statement: IF expression THEN statement ELSE statement .
+
+    $default  reduce using rule 27 (statement)
+
+
+State 132
+
+    7 type: ARRAY LBRACE num DOTDOT num RBRACE OF . type
+
+    ARRAY    shift, and go to state 25
+    INTEGER  shift, and go to state 26
+    REAL     shift, and go to state 27
+    STRING   shift, and go to state 28
+
+    type           go to state 134
+    standard_type  go to state 30
+
+
+State 133
+
+   18 parameter_list: optional_var identifier_list COLON type SEMICOLON parameter_list .
+
+    $default  reduce using rule 18 (parameter_list)
+
+
+State 134
+
+    7 type: ARRAY LBRACE num DOTDOT num RBRACE OF type .
+
+    $default  reduce using rule 7 (type)

@@ -4,7 +4,7 @@
 
 class CompoundStatementNode : public ASTNodeBase
 {
-    public:  
+    private:  
         NodeList* statement_node_list; 
 
     public:
@@ -15,9 +15,10 @@ class CompoundStatementNode : public ASTNodeBase
             
         ~CompoundStatementNode()
         {
-            //NODELIST_PTR_DELETE(this->statement_node_list)
+            
         }
         void accept(AstNodeVisitor &p_visitor) override;
         void visitChildNodes(AstNodeVisitor &p_visitor) override;
         bool ismain=false;
+        NodeList* get_statement_node_list(){return statement_node_list;} 
 };

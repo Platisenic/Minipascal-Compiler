@@ -110,7 +110,6 @@ prog : PROGRAM IDENTIFIER LPAREN identifier_list RPAREN SEMICOLON
              $8,
              $9
          );
-         //free($2);
      }
      ;
      
@@ -119,20 +118,17 @@ identifier_list : IDENTIFIER
                 { 
                     $$ = new vector<id_info *>();
                     $$->push_back(new id_info(std::string($1), @1.first_line, @1.first_column));
-                    //free($1);
                 }
                 | IDENTIFIER COMMA identifier_list
                 { 
                     $3->push_back(new id_info(std::string($1), @1.first_line, @1.first_column)); 
-                    $$ = $3;
-                    //free($1);
+                    $$ = $3;          
                 }
                 ;
-//1210
+
 declarations : VAR identifier_list COLON type SEMICOLON declarations
              {
                 auto vars = new NodeList();
-                //std::reverse($4->dimensions.begin(), $4->dimensions.end()); !!!!!!!!!!!!!!!!!!!!!
                 for(auto& id : *$2)
                     vars->push_back(new VariableNode(id->line_number, id->col_number, id->name, $4));
                 auto decl = new DeclarationNode(@2.first_line, @2.first_column, vars);
@@ -159,7 +155,7 @@ subprogram_declarations : subprogram_declaration SEMICOLON subprogram_declaratio
                         | { $$ = new NodeList(); }
                         ;
 
-//1210
+
 subprogram_declaration : FUNCTION IDENTIFIER arguments COLON standard_type SEMICOLON declarations compound_statement
                 {   std::reverse($3->begin(), $3->end());
                     $$ = new SubProgramNode(
@@ -189,26 +185,20 @@ arguments : LPAREN parameter_list RPAREN { $$ = $2; }
 parameter_list : optional_var identifier_list COLON type
                 { 
                     auto vars = new NodeList();
-                    //std::reverse($4->dimensions.begin(), $4->dimensions.end());
                     for(auto& id : *$2)
                         vars->push_back(new VariableNode(id->line_number, id->col_number, id->name, $4));
                     auto decl = new DeclarationNode(@2.first_line, @2.first_column, vars);
                     $$ = new NodeList();
                     $$->push_back(decl);
-                    // free($4);
-                    // NODELIST_PTR_DELETE($2);
                 }
                | optional_var identifier_list COLON type SEMICOLON parameter_list
                 {   
                     auto vars = new NodeList();
-                    //std::reverse($4->dimensions.begin(), $4->dimensions.end());
                     for(auto& id : *$2)
                         vars->push_back(new VariableNode(id->line_number, id->col_number, id->name, $4));
                     auto decl = new DeclarationNode(@2.first_line, @2.first_column, vars);
                     $$ = $6;
                     $$->push_back(decl);
-                    // free($4);
-                    // NODELIST_PTR_DELETE($2);
                 }
                ;
 
@@ -399,16 +389,11 @@ int main(int argc, char *argv[]) {
     yyin = fp;
     yyparse();
     if(root){
-        //AstDumper dump;
-        //dump.visit(*(ProgramNode *)root);
-        
         SemanticAnalyzer sema;
         sema.visit(*(ProgramNode *)root);
         SymbolTable* S0Stmbol = sema.getS0Stmbol();
         CodeGenerator gene(output, S0Stmbol);
         gene.visit(*(ProgramNode *)root);
-        
-
     }
     return 0;
 }

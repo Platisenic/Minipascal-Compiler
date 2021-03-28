@@ -3,8 +3,7 @@
 #include "Nodes/variable.hpp"
 class DeclarationNode: public ASTNodeBase
 {
-    public:
-        
+    private:
         NodeList* VariableNodes;
 
     public:
@@ -14,7 +13,7 @@ class DeclarationNode: public ASTNodeBase
 
         ~DeclarationNode()
         {
-            //NODELIST_PTR_DELETE(VariableNodes)
+           
         }
         void accept(AstNodeVisitor &p_visitor) override;
         void visitChildNodes(AstNodeVisitor &p_visitor) override;
@@ -26,4 +25,5 @@ class DeclarationNode: public ASTNodeBase
             }
         
         }
+        NodeList* get_VariableNodes(){return VariableNodes;}
 };

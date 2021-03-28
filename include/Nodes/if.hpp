@@ -3,8 +3,7 @@
 
 class IfNode: public ASTNodeBase
 {
-    public:
-        
+    private:
         Node condition;
         Node body_then;
         Node body_else; //Maybe nullptr
@@ -17,10 +16,11 @@ class IfNode: public ASTNodeBase
                Node _body_else);
         ~IfNode()
         {
-            //SAFE_DELETE(this->condition)
-            //NODELIST_PTR_DELETE(this->body_then)
-            //NODELIST_PTR_DELETE(this->body_else)
+            
         }
         void accept(AstNodeVisitor &p_visitor) override;
         void visitChildNodes(AstNodeVisitor &p_visitor) override;
+        Node get_condition(){return condition;}
+        Node get_body_then(){return body_then;}
+        Node get_body_else(){return body_else;} //Maybe nullptr
 };
